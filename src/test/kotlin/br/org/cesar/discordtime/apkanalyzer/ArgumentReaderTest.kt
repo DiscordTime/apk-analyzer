@@ -14,6 +14,7 @@ class ArgumentReaderTest {
                 Assert.assertFalse(it.isValid())
                 Assert.assertEquals("", it.apkFilePath)
                 Assert.assertEquals("", it.decodeOutput)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
     
@@ -27,6 +28,7 @@ class ArgumentReaderTest {
                 Assert.assertFalse(it.isValid())
                 Assert.assertEquals("", it.apkFilePath)
                 Assert.assertEquals("", it.decodeOutput)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -42,6 +44,7 @@ class ArgumentReaderTest {
                 Assert.assertFalse(it.isValid())
                 Assert.assertEquals(apkFilePath, it.apkFilePath)
                 Assert.assertEquals("", it.decodeOutput)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -55,6 +58,7 @@ class ArgumentReaderTest {
                 Assert.assertFalse(it.isValid())
                 Assert.assertEquals("", it.apkFilePath)
                 Assert.assertEquals("", it.decodeOutput)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -69,6 +73,7 @@ class ArgumentReaderTest {
                 Assert.assertFalse(it.isValid())
                 Assert.assertEquals(decodeOutput, it.decodeOutput)
                 Assert.assertEquals("", it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -83,6 +88,7 @@ class ArgumentReaderTest {
                 Assert.assertFalse(it.isValid())
                 Assert.assertEquals("", it.decodeOutput)
                 Assert.assertEquals("", it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -99,6 +105,7 @@ class ArgumentReaderTest {
                 Assert.assertFalse(it.isValid())
                 Assert.assertEquals("", it.decodeOutput)
                 Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -116,6 +123,7 @@ class ArgumentReaderTest {
                 Assert.assertTrue(it.isValid())
                 Assert.assertEquals(decodeOutput, it.decodeOutput)
                 Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -132,6 +140,7 @@ class ArgumentReaderTest {
                 Assert.assertTrue(it.isValid())
                 Assert.assertEquals(decodeOutput, it.decodeOutput)
                 Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -148,6 +157,7 @@ class ArgumentReaderTest {
                 Assert.assertTrue(it.isValid())
                 Assert.assertEquals(decodeOutput, it.decodeOutput)
                 Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
             }
     }
 
@@ -164,6 +174,108 @@ class ArgumentReaderTest {
                 Assert.assertTrue(it.isValid())
                 Assert.assertEquals(decodeOutput, it.decodeOutput)
                 Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
+            }
+    }
+
+    @Test fun `should return true for clear output value when passing true`() {
+        val apkFilePath: String = "apk file path"
+        val decodeOutput: String = "decode output"
+
+        ArgumentReader()
+            .read(arrayOf<String>(
+                "-a", apkFilePath, "-o", decodeOutput, "-f"
+            ))
+            .let {
+                Assert.assertNotNull(it)
+                Assert.assertTrue(it.isValid())
+                Assert.assertEquals(decodeOutput, it.decodeOutput)
+                Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(true, it.clearDecodeOutputDir)
+            }
+    }
+
+    @Test fun `should return true for clear outpur dir when passing macro only`() {
+        val apkFilePath: String = "apk file path"
+        val decodeOutput: String = "decode output"
+
+        ArgumentReader()
+            .read(arrayOf<String>(
+                apkFilePath, decodeOutput, "-f"
+            ))
+            .let {
+                Assert.assertNotNull(it)
+                Assert.assertTrue(it.isValid())
+                Assert.assertEquals(decodeOutput, it.decodeOutput)
+                Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(true, it.clearDecodeOutputDir)
+            }
+    }
+
+    @Test fun `should return true for clean output when passing true as value without macro`() {
+        val apkFilePath: String = "apk file path"
+        val decodeOutput: String = "decode output"
+
+        ArgumentReader()
+            .read(arrayOf<String>(
+                apkFilePath, decodeOutput, "true"
+            ))
+            .let {
+                Assert.assertNotNull(it)
+                Assert.assertTrue(it.isValid())
+                Assert.assertEquals(decodeOutput, it.decodeOutput)
+                Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(true, it.clearDecodeOutputDir)
+            }
+    }
+
+    @Test fun `should return false for clean output when passing false as value without macro`() {
+        val apkFilePath: String = "apk file path"
+        val decodeOutput: String = "decode output"
+
+        ArgumentReader()
+            .read(arrayOf<String>(
+                apkFilePath, decodeOutput, "false"
+            ))
+            .let {
+                Assert.assertNotNull(it)
+                Assert.assertTrue(it.isValid())
+                Assert.assertEquals(decodeOutput, it.decodeOutput)
+                Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
+            }
+    }
+
+    @Test fun `should not throw expection when passing values more than limit`() {
+        val apkFilePath: String = "apk file path"
+        val decodeOutput: String = "decode output"
+
+        ArgumentReader()
+            .read(arrayOf<String>(
+                apkFilePath, decodeOutput, "false", "extra"
+            ))
+            .let {
+                Assert.assertNotNull(it)
+                Assert.assertTrue(it.isValid())
+                Assert.assertEquals(decodeOutput, it.decodeOutput)
+                Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(false, it.clearDecodeOutputDir)
+            }
+    }
+    @Test fun `should not throw expection when passing values more than limit with macros`() {
+        val apkFilePath: String = "apk file path"
+        val decodeOutput: String = "decode output"
+
+        ArgumentReader()
+            .read(arrayOf<String>(
+                "-a", apkFilePath, "-o", decodeOutput, "-f", "extra"
+            ))
+            .let {
+                Assert.assertNotNull(it)
+                Assert.assertTrue(it.isValid())
+                Assert.assertEquals(decodeOutput, it.decodeOutput)
+                Assert.assertEquals(apkFilePath, it.apkFilePath)
+                Assert.assertEquals(true, it.clearDecodeOutputDir)
             }
     }
 }
