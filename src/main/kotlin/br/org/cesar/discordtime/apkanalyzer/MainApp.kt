@@ -7,6 +7,7 @@ import br.org.cesar.discordtime.apkanalyzer.decode.ApkSmaliDecoder
 class MainApp {
     companion object {
         const val DEFAULT_ANDROID_VERSION = 28;
+        const val DEBUG: Boolean = false;
     }
 
     fun run(args: Array<String>) {
@@ -14,14 +15,16 @@ class MainApp {
             if (!argument.isValid()) {
                 println(ArgumentReader.USAGE_MESSAGE)
             } else {
-                decodeApk(argument)
-                // TODO: Get all the invoke methods in the project.
+                val success = decodeApk(argument)
+                if (success) {
+                    getInvokedMethods(argument)
+                }
             }
         }
     }
 
     private fun decodeApk(argument: Argument): Boolean {
-        println("Decode APK: ${argument.apkFilePath}")
+        if (DEBUG) println("Decode APK: ${argument.apkFilePath}")
         var result: Boolean = true
         try {
             ApkSmaliDecoder().decode(
@@ -34,8 +37,14 @@ class MainApp {
             e.printStackTrace()
         }
 
-        println("Decode APK completed: $result")
+        if (DEBUG) println("Decode APK completed: $result")
         return result
+    }
+
+    private fun getInvokedMethods(argument: Argument) {
+        SmaliAnalyzer()
+            .getInvokedMethods(argument.decodeOutput)
+            .forEach { println(it) }
     }
 }
 
